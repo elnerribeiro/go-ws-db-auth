@@ -13,3 +13,9 @@ ou
 	db.url=username:password@host:porta/banco?param=value (MySQL)
 
 . Criar variavel de ambiente PORT com a porta
+
+/api/user/login
+
+/api/user/validate
+
+. Remover rota /api/user/list

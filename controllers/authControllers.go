@@ -36,3 +36,12 @@ var ListUsers = func(w http.ResponseWriter, r *http.Request) {
 	resp["data"] = data
 	u.Respond(w, resp)
 }
+
+//Validate valida o usuario
+var Validate = func(w http.ResponseWriter, r *http.Request) {
+
+	id := r.Context().Value("user").(int)
+	resp := u.Message(true, "success")
+	resp["userId"] = id
+	u.Respond(w, resp)
+}
