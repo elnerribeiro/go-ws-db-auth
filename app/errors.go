@@ -3,7 +3,7 @@ package app
 import (
 	"net/http"
 
-	u "github.com/elnerribeiro/gosbxauth/utils"
+	u "github.com/elnerribeiro/go-ws-db-auth/utils"
 )
 
 var NotFoundHandler = func(next http.Handler) http.Handler {

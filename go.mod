@@ -1,12 +1,9 @@
-module github.com/elnerribeiro/gosbxauth
+module github.com/elnerribeiro/go-ws-db-auth
 
-go 1.13
+go 1.14
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/elnerribeiro/gosbxdb v0.0.0-20191031120817-c3d1b6472140
-	github.com/gorilla/mux v1.7.3
-	github.com/jinzhu/gorm v1.9.11
-	github.com/joho/godotenv v1.3.0
-	golang.org/x/crypto v0.0.0-20191029031824-8986dd9e96cf
+	github.com/elnerribeiro/go-mustache-db v0.0.0-20200323203329-1f6158afdb8c
+	github.com/gorilla/mux v1.7.4
 )

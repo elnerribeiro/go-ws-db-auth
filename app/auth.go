@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/elnerribeiro/gosbxauth/models"
-	u "github.com/elnerribeiro/gosbxauth/utils"
+	"github.com/elnerribeiro/go-ws-db-auth/models"
+	u "github.com/elnerribeiro/go-ws-db-auth/utils"
 
 	"github.com/dgrijalva/jwt-go"
 )

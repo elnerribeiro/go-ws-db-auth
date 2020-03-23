@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/elnerribeiro/gosbxauth/app"
-	"github.com/elnerribeiro/gosbxauth/controllers"
+	"github.com/elnerribeiro/go-ws-db-auth/app"
+	"github.com/elnerribeiro/go-ws-db-auth/controllers"
 
 	"github.com/gorilla/mux"
 )

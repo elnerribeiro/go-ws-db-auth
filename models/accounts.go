@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	u "github.com/elnerribeiro/gosbxauth/utils"
-	db "github.com/elnerribeiro/gosbxdb"
+	db "github.com/elnerribeiro/go-mustache-db"
+	u "github.com/elnerribeiro/go-ws-db-auth/utils"
 )
 
 //Token e um token JWT

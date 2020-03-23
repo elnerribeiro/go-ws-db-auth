@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/elnerribeiro/gosbxauth/models"
-	u "github.com/elnerribeiro/gosbxauth/utils"
+	"github.com/elnerribeiro/go-ws-db-auth/models"
+	u "github.com/elnerribeiro/go-ws-db-auth/utils"
 )
 
 //Authenticate autentica o usuario

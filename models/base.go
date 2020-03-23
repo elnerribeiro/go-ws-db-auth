@@ -1,9 +1,9 @@
 package models
 
 import (
-	"github.com/elnerribeiro/gosbxdb"
+	db "github.com/elnerribeiro/go-mustache-db"
 )
 
 func init() {
-	gosbxdb.InitDb()
+	db.InitDb()
 }
