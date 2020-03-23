@@ -2,9 +2,10 @@
 . Criar arquivo consultas/buscarusuario.sql com select retornando campos id, email e password
 
 . Criar application.properties
+
 	printSql=false
     
-    dialeto=mysql (postgres)
+    	dialeto=mysql (postgres)
 	
 	db.url=postgres://USERNAME:PASSWORD@HOST:PORTA/BANCO (Postgres)
 	
