@@ -1,4 +1,4 @@
-# gosbxauth
+# go-ws-db-auth
 . Criar arquivo consultas/buscarusuario.sql com select retornando campos id, email e password
 
 . Criar application.properties
