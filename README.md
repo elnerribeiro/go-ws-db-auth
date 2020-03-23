@@ -4,9 +4,7 @@
 . Criar application.properties
 
 	printSql=false
-    
-    	dialeto=mysql (postgres)
-	
+	dialeto=mysql (postgres)
 	db.url=postgres://USERNAME:PASSWORD@HOST:PORTA/BANCO (Postgres)
 	
 ou
