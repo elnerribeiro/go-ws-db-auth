@@ -1,4 +1,4 @@
-package models
+package repositories
 
 import (
 	"database/sql"
@@ -38,6 +38,7 @@ func Upsert(tx *db.Transacao, user *User) (*User, error) {
 		}
 		newID := res.(*User)
 		user.ID = newID.ID
+		user.Password = ""
 		return user, nil
 	}
 
@@ -48,6 +49,7 @@ func Upsert(tx *db.Transacao, user *User) (*User, error) {
 	if err2 != nil {
 		return nil, err2
 	}
+	user.Password = ""
 	return user, nil
 }
 

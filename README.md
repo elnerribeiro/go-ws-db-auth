@@ -9,6 +9,7 @@ AS THIS IS JUST A POC, NOT EVERYTHING IS DONE EXACTLY THE WAY IT SHOULD:
 	2. Better modules: To maximize code reusability, when creating microservices, we should have each layer on its own modules, so Auth could import user, for example.
 	3. Methods/Interfaces: Functions should be used only when there's no side effects. For calls with side effects, an interface should be created and its methods implemented.
 	4. Tests and Documentation: Yeah... I know...
+	5. Logging: Will be done soon (probably tomorrow)
 
 Create database:
 
@@ -22,7 +23,7 @@ Create database:
 	create database teste;
 	\connect teste;
 	create table usuario (id serial not null, email varchar(50) not null, role varchar(20) not null, password varchar(128) not null, primary key (id));
-	create table ins_id (id serial not null, type varchar(20) not null, quantity int not null, status varchar(20) not null, tstamp bigint, primary key (id));
+	create table ins_id (id serial not null, type varchar(20) not null, quantity int not null, status varchar(20) not null, tstampinit bigint, tstampend bigint, primary key (id));
 	create table insert_batch(id serial not null, id_ins_id int not null, pos int not null, primary key(id), foreign key (id_ins_id) references ins_id(id));
 	--PWD abc
 	insert into usuario (email, role, password) values ('usuario@usuario.com', 'user', 'DDAF35A193617ABACC417349AE20413112E6FA4E89A97EA20A9EEEE64B55D39A2192992A274FC1A836BA3C23A3FEEBBD454D4423643CE80E2A9AC94FA54CA49F');
@@ -42,6 +43,10 @@ Build and run:
 Default URL: 
 
 	http://localhost:8000
+
+Postman Collection:
+
+	https://www.getpostman.com/collections/06704a4c68b44e63502e
 
 Calls:
 
@@ -157,3 +162,122 @@ Calls:
 				"status": true
 			}
 
+	/api/insert (DELETE)
+		Request:
+			Headers:
+				Content-Type: application/json
+				Authorization: Bearer {{token}}
+		Response:
+			{
+				"message": "success",
+				"status": true
+			}
+
+	/api/insert/{id} (GET)
+		Request:
+			Headers:
+				Content-Type: application/json
+				Authorization: Bearer {{token}}
+		Response:
+			{
+				"data": {
+					"id": 6,
+					"type": "sync",
+					"quantity": 10,
+					"status": "Finished",
+					"list": [
+						{
+							"id": 120107,
+							"id_ins_id": 6,
+							"pos": 1
+						},
+						...
+					]
+				},
+				"message": "success",
+				"status": true
+			}
+
+	/api/insert/sync/{quantity} (PUT)
+		Request:
+			Headers:
+				Content-Type: application/json
+				Authorization: Bearer {{token}}
+		Response:
+			{
+				"data": {
+					"id": 6,
+					"type": "sync",
+					"quantity": 10,
+					"status": "Finished",
+					"tstampinit": 1585175306,
+        			"tstampend": 1585175306,
+					"list": [
+						{
+							"id": 120107,
+							"id_ins_id": 6,
+							"pos": 1
+						},
+						{
+							"id": 120108,
+							"id_ins_id": 6,
+							"pos": 2
+						},
+						{
+							"id": 120109,
+							"id_ins_id": 6,
+							"pos": 3
+						},
+						{
+							"id": 120110,
+							"id_ins_id": 6,
+							"pos": 4
+						},
+						{
+							"id": 120111,
+							"id_ins_id": 6,
+							"pos": 5
+						},
+						{
+							"id": 120112,
+							"id_ins_id": 6,
+							"pos": 6
+						},
+						{
+							"id": 120113,
+							"id_ins_id": 6,
+							"pos": 7
+						},
+						{
+							"id": 120114,
+							"id_ins_id": 6,
+							"pos": 8
+						},
+						{
+							"id": 120115,
+							"id_ins_id": 6,
+							"pos": 9
+						}
+					]
+				},
+				"message": "success",
+				"status": true
+			}
+
+	/api/insert/async/{quantity} (PUT)
+		Request:
+			Headers:
+				Content-Type: application/json
+				Authorization: Bearer {{token}}
+		Response:
+			{
+				"data": {
+					"id": 5,
+					"type": "async",
+					"quantity": 20000,
+					"status": "Running",
+					"tstampinit": 1585174744
+				},
+				"message": "success",
+				"status": true
+			}

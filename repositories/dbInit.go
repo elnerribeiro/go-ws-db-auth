@@ -1,4 +1,4 @@
-package models
+package repositories
 
 import (
 	db "github.com/elnerribeiro/go-mustache-db"
