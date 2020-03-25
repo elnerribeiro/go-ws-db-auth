@@ -6,6 +6,7 @@ import (
 	u "github.com/elnerribeiro/go-ws-db-auth/utils"
 )
 
+//NotFoundHandler Handles 404
 var NotFoundHandler = func(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

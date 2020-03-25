@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/elnerribeiro/go-ws-db-auth/app"
 	"github.com/elnerribeiro/go-ws-db-auth/controllers"
@@ -15,9 +14,12 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/api/user/list", controllers.ListUsers).Methods("POST")
-	router.HandleFunc("/api/user/login", controllers.Authenticate).Methods("POST")
-	router.HandleFunc("/api/user/validate", controllers.Validate).Methods("GET")
+	router.HandleFunc("/api/users", controllers.ListUsers).Methods("POST")
+	router.HandleFunc("/api/user/{id:[0-9]+}", controllers.GetUserByID).Methods("GET")
+	router.HandleFunc("/api/user", controllers.Upsert).Methods("PUT")
+	router.HandleFunc("/api/user/{id:[0-9]+}", controllers.Delete).Methods("DELETE")
+	router.HandleFunc("/api/login", controllers.Authenticate).Methods("POST")
+	router.HandleFunc("/api/validate", controllers.Validate).Methods("GET")
 
 	router.Use(app.JwtAuthentication) //attach JWT auth middleware
 
@@ -25,10 +27,7 @@ func main() {
 		w.WriteHeader(http.StatusNotFound)
 	})
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8000" //localhost
-	}
+	port := "8000"
 
 	fmt.Println(port)
 

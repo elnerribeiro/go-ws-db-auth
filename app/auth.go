@@ -6,19 +6,19 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/elnerribeiro/go-ws-db-auth/models"
+	repo "github.com/elnerribeiro/go-ws-db-auth/repositories"
 	u "github.com/elnerribeiro/go-ws-db-auth/utils"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-//JwtAuthentication Auth com JWT
+//JwtAuthentication Auth with JWT
 var JwtAuthentication = func(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		notAuth := []string{"/api/user/login"} //List of endpoints that doesn't require auth
-		requestPath := r.URL.Path              //current request path
+		notAuth := []string{"/api/login"} //List of endpoints that doesn't require auth
+		requestPath := r.URL.Path         //current request path
 
 		//check if request does not need authentication, serve the request if it doesn't need it
 		for _, value := range notAuth {
@@ -50,10 +50,10 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		}
 
 		tokenPart := splitted[1] //Grab the token part, what we are truly interested in
-		tk := &models.Token{}
+		tk := &repo.Token{}
 
 		token, err := jwt.ParseWithClaims(tokenPart, tk, func(token *jwt.Token) (interface{}, error) {
-			return []byte("softboxgopwd12@"), nil
+			return []byte("JWTpassword123@"), nil
 		})
 
 		if err != nil { //Malformed token, returns with http code 403 as usual
@@ -74,7 +74,8 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 
 		//Everything went well, proceed with the request and set the caller to the user retrieved from the parsed token
 		fmt.Sprintf("User %", tk.UserID) //Useful for monitoring
-		ctx := context.WithValue(r.Context(), "user", tk.UserID)
+		var ctx = context.WithValue(r.Context(), repo.ContextKey("user"), tk.UserID)
+		ctx = context.WithValue(ctx, repo.ContextKey("role"), tk.Role)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r) //proceed in the middleware chain!
 	})

@@ -1,0 +1,1 @@
+insert into usuario (email, password, role) values ({:email}, {:password}, {:role}) RETURNING id
