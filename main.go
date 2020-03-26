@@ -11,7 +11,7 @@ import (
 
 	"github.com/elnerribeiro/go-ws-db-auth/app"
 	"github.com/elnerribeiro/go-ws-db-auth/controllers"
-	"github.com/elnerribeiro/go-ws-db-auth/repositories"
+	"github.com/elnerribeiro/go-ws-db-auth/utils"
 
 	"github.com/gorilla/mux"
 )
@@ -54,8 +54,8 @@ func main() {
 
 	<-done
 	fmt.Println("Server Stopped")
-	repositories.FinalizeDB()
-	repositories.FinalizeLog()
+	utils.FinalizeDB()
+	utils.FinalizeLog()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer func() {
