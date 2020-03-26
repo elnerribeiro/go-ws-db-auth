@@ -1,11 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/elnerribeiro/go-ws-db-auth/app"
 	"github.com/elnerribeiro/go-ws-db-auth/controllers"
+	"github.com/elnerribeiro/go-ws-db-auth/repositories"
 
 	"github.com/gorilla/mux"
 )
@@ -30,12 +36,34 @@ func main() {
 		w.WriteHeader(http.StatusNotFound)
 	})
 
-	port := "8000"
-
-	fmt.Println(port)
-
-	err := http.ListenAndServe(":"+port, router) //Launch the app, visit localhost:8000/api
-	if err != nil {
-		fmt.Print(err)
+	srv := &http.Server{
+		Addr:    ":8000",
+		Handler: router,
 	}
+
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Printf("listen: %s\n", err)
+		}
+	}()
+
+	fmt.Println("Server started on port 8000")
+
+	<-done
+	fmt.Println("Server Stopped")
+	repositories.FinalizeDB()
+	repositories.FinalizeLog()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer func() {
+		cancel()
+	}()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		fmt.Printf("Server Shutdown Failed:%+v", err)
+	}
+	fmt.Println("Server Exited Properly")
 }
