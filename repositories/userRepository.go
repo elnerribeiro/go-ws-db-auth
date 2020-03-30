@@ -4,36 +4,39 @@ import (
 	"database/sql"
 
 	db "github.com/elnerribeiro/go-mustache-db"
+	u "github.com/elnerribeiro/go-ws-db-auth/utils"
 )
 
 //ListUsers Lists all users
-func ListUsers() ([]User, error) {
+func (user *User) ListUsers() ([]User, error) {
 	var dados db.Dados
 	dados = make(db.Dados)
 	val, err := db.SelectAll(nil, "getuser", &[]User{}, dados)
 	if err != nil {
+		u.Logger.Error("[ListUsers] Error listing users: %s", err)
 		return nil, err
 	}
 	account := val.(*[]User)
 	if account != nil {
-		//finalAccounts := make([]User, len(*account))
 		for i, u := range *account {
 			u.Password = ""
 			(*account)[i] = u
 		}
 		return *account, nil
 	}
+	u.Logger.Error("[ListUsers] No user found.")
 	return *account, nil
 }
 
 //Upsert Inserts or updates an user
-func Upsert(tx *db.Transacao, user *User) (*User, error) {
+func (user *User) Upsert(tx *db.Transacao) (*User, error) {
 	var dados db.Dados
 	dados = make(db.Dados)
-	userToDados(user, &dados)
+	user.UserToDados(&dados)
 	if user.ID == 0 {
 		res, err := db.InsertReturningPostgres(tx, "usuario", dados, "id", &User{})
 		if err != nil {
+			u.Logger.Error("[Upsert] Error inserting user: %s", err)
 			return nil, err
 		}
 		newID := res.(*User)
@@ -47,6 +50,7 @@ func Upsert(tx *db.Transacao, user *User) (*User, error) {
 	filter["id"] = user.ID
 	_, err2 := db.Update(tx, "usuario", dados, filter)
 	if err2 != nil {
+		u.Logger.Error("[Upsert] Error updating user: %s", err2)
 		return nil, err2
 	}
 	user.Password = ""
@@ -54,15 +58,19 @@ func Upsert(tx *db.Transacao, user *User) (*User, error) {
 }
 
 //Delete Deletes an user
-func Delete(tx *db.Transacao, uid int) error {
+func (user *User) Delete(tx *db.Transacao) error {
 	var filter db.Dados
 	filter = make(db.Dados)
-	filter["id"] = uid
+	filter["id"] = user.ID
 	_, err := db.Delete(tx, "usuario", filter)
 	return err
 }
 
-func userToDados(user *User, dados *db.Dados) *db.Dados {
+//UserToDados Fills a map containing the struct User
+func (user *User) UserToDados(dados *db.Dados) *db.Dados {
+	if user.ID != 0 {
+		(*dados)["id"] = user.ID
+	}
 	if user.Email != "" {
 		(*dados)["email"] = user.Email
 	}
@@ -76,13 +84,14 @@ func userToDados(user *User, dados *db.Dados) *db.Dados {
 }
 
 //GetUserByID Get an user by ID
-func GetUserByID(u int) (*User, error) {
+func (user *User) GetUserByID() (*User, error) {
 
 	var dados db.Dados
 	dados = make(db.Dados)
-	dados["id"] = u
+	dados["id"] = user.ID
 	val, err := getUser(dados)
 	if err != nil {
+		u.Logger.Error("[GetUserByID] Error retrieving user: %s", err)
 		return nil, err
 	}
 	account := val.(*User)
@@ -94,17 +103,19 @@ func GetUserByID(u int) (*User, error) {
 }
 
 //GetUserByEmail Get an user by email
-func GetUserByEmail(email string, password bool) (*User, error) {
+func (user *User) GetUserByEmail(password bool) (*User, error) {
 
 	var dados db.Dados
 	dados = make(db.Dados)
-	dados["email"] = email
+	dados["email"] = user.Email
 	val, err := getUser(dados)
 	if err != nil {
+		u.Logger.Error("[GetUserByEmail] Error retrieving user: %s", err)
 		return nil, err
 	}
 	account := val.(*User)
 	if account.Email == "" { //User not found!
+		u.Logger.Error("[GetUserByEmail] Error retrieving user: %s", err)
 		return nil, sql.ErrNoRows
 	}
 
@@ -117,6 +128,7 @@ func GetUserByEmail(email string, password bool) (*User, error) {
 func getUser(dados db.Dados) (interface{}, error) {
 	val, err := db.SelectOne(nil, "getuser", &User{}, dados)
 	if err != nil {
+		u.Logger.Error("[getUser] Error selecting user: %s", err)
 		return nil, err
 	}
 	return val, nil

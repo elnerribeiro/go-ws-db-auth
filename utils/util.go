@@ -44,7 +44,7 @@ func FinalizeDB() {
 }
 
 func init() {
-	Logger := ozzolog.NewLogger()
+	Logger = ozzolog.NewLogger()
 	Logger.Targets = []ozzolog.Target{ozzolog.NewConsoleTarget()}
 	Logger.Open()
 	db.InitDb(Logger)

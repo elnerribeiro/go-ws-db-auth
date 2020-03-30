@@ -15,11 +15,12 @@ var Authenticate = func(w http.ResponseWriter, r *http.Request) {
 	account := &repo.User{}
 	err := json.NewDecoder(r.Body).Decode(account) //decode the request body into struct and failed if any error occur
 	if err != nil {
+		u.Logger.Error("Invalid request: %s", err)
 		u.Respond(w, u.Message(false, "Invalid request"))
 		return
 	}
 
-	resp := services.Login(account.Email, account.Password)
+	resp := services.Login(account, account.Password)
 	u.Respond(w, resp)
 }
 

@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -33,6 +32,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		tokenHeader := r.Header.Get("Authorization") //Grab the token from the header
 
 		if tokenHeader == "" { //Token is missing, returns with error code 403 Unauthorized
+			u.Logger.Info("[JwtAuthentication] 403 Token Not found!")
 			response = u.Message(false, "Missing auth token")
 			w.WriteHeader(http.StatusForbidden)
 			w.Header().Add("Content-Type", "application/json")
@@ -42,6 +42,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 
 		splitted := strings.Split(tokenHeader, " ") //The token normally comes in format `Bearer {token-body}`, we check if the retrieved token matched this requirement
 		if len(splitted) != 2 {
+			u.Logger.Info("[JwtAuthentication] 403 Invalid/Malformed auth token!")
 			response = u.Message(false, "Invalid/Malformed auth token")
 			w.WriteHeader(http.StatusForbidden)
 			w.Header().Add("Content-Type", "application/json")
@@ -57,6 +58,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		})
 
 		if err != nil { //Malformed token, returns with http code 403 as usual
+			u.Logger.Info("[JwtAuthentication] 403 Invalid, expired or malformed token!")
 			response = u.Message(false, "Invalid, expired or malformed token")
 			w.WriteHeader(http.StatusForbidden)
 			w.Header().Add("Content-Type", "application/json")
@@ -65,6 +67,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		}
 
 		if !token.Valid { //Token is invalid, maybe not signed on this server
+			u.Logger.Info("[JwtAuthentication] 403 Token not valid on this server!")
 			response = u.Message(false, "Token is not valid.")
 			w.WriteHeader(http.StatusForbidden)
 			w.Header().Add("Content-Type", "application/json")
@@ -73,7 +76,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		}
 
 		//Everything went well, proceed with the request and set the caller to the user retrieved from the parsed token
-		fmt.Sprintf("User %", tk.UserID) //Useful for monitoring
+		u.Logger.Debug("User %d just logged in", tk.UserID) //Useful for monitoring
 		var ctx = context.WithValue(r.Context(), repo.ContextKey("user"), tk.UserID)
 		ctx = context.WithValue(ctx, repo.ContextKey("role"), tk.Role)
 		r = r.WithContext(ctx)

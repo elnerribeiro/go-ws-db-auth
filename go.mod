@@ -8,4 +8,5 @@ require (
 	github.com/go-ozzo/ozzo-dbx v1.5.0
 	github.com/go-ozzo/ozzo-log v0.0.0-20160703175702-610cdd147d9a
 	github.com/gorilla/mux v1.7.4
+	github.com/rs/cors v1.7.0
 )

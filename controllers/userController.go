@@ -20,7 +20,8 @@ var ListUsers = func(w http.ResponseWriter, r *http.Request) {
 		u.Respond(w, resp)
 		return
 	}
-	data, err := services.ListUsers()
+	account := &repo.User{}
+	data, err := services.ListUsers(account)
 	if err != nil {
 		resp := u.Message(false, "Erro ao buscar usuarios")
 		u.Respond(w, resp)
@@ -41,7 +42,9 @@ var GetUserByID = func(w http.ResponseWriter, r *http.Request) {
 	}
 	vars := mux.Vars(r)
 	uID, _ := strconv.Atoi(vars["id"])
-	data, err := services.GetUserByID(uID)
+	account := &repo.User{}
+	account.ID = uID
+	data, err := services.GetUserByID(account)
 	if err != nil {
 		resp := u.Message(false, "Erro ao buscar usuario")
 		u.Respond(w, resp)
@@ -88,8 +91,9 @@ var Delete = func(w http.ResponseWriter, r *http.Request) {
 	}
 	vars := mux.Vars(r)
 	uID, _ := strconv.Atoi(vars["id"])
-	err := services.Delete(uID)
-	if err != nil {
+	account := &repo.User{}
+	account.ID = uID
+	if err := services.Delete(account); err != nil {
 		resp := u.Message(false, "Erro ao remover usuario")
 		u.Respond(w, resp)
 		return

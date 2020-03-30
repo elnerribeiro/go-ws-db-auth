@@ -11,20 +11,23 @@ import (
 )
 
 //ListUsers Lists all users
-func ListUsers() ([]repo.User, error) {
-	return repo.ListUsers()
+func ListUsers(user *repo.User) ([]repo.User, error) {
+	return user.ListUsers()
 }
 
 //Login Authenticates an user
-func Login(email, password string) map[string]interface{} {
-	account, err := repo.GetUserByEmail(email, true)
+func Login(user *repo.User, password string) map[string]interface{} {
+	account, err := user.GetUserByEmail(true)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			u.Logger.Error("[Login] Email not found.")
 			return u.Message(false, "Email address not found")
 		}
+		u.Logger.Error("[Login] Connection error. Please retry: %s", err)
 		return u.Message(false, "Connection error. Please retry")
 	}
 	if account.Password != password { //Password does not match!
+		u.Logger.Error("[Login] Invalid login credentials. Please try again: %s != %s", account.Password, password)
 		return u.Message(false, "Invalid login credentials. Please try again")
 	}
 	//Worked! Logged In
@@ -47,16 +50,19 @@ func Login(email, password string) map[string]interface{} {
 	tokenString, _ := token.SignedString([]byte("JWTpassword123@"))
 	account.Token = tokenString //Store the token in the response
 
+	u.Logger.Info("[Login] User Logged In: %d", account.ID)
+
 	resp := u.Message(true, "Logged In")
 	resp["account"] = account
 	return resp
 }
 
 //GetUserByID Gets an user by ID
-func GetUserByID(u int) (*repo.User, error) {
+func GetUserByID(user *repo.User) (*repo.User, error) {
 
-	val, err := repo.GetUserByID(u)
+	val, err := user.GetUserByID()
 	if err != nil {
+		u.Logger.Error("[GetUserByID] Error : %s", err)
 		return nil, err
 	}
 	return val, nil
@@ -67,10 +73,12 @@ func Upsert(user *repo.User) (*repo.User, error) {
 	tx, err := db.GetTransaction()
 	defer db.Rollback(tx)
 	if err != nil {
+		u.Logger.Error("[Upsert] Error starting transaction: %s", err)
 		return nil, err
 	}
-	val, err := repo.Upsert(tx, user)
+	val, err := user.Upsert(tx)
 	if err != nil {
+		u.Logger.Error("[Upsert] Error executing upsert: %s", err)
 		return nil, err
 	}
 	db.Commit(tx)
@@ -78,14 +86,15 @@ func Upsert(user *repo.User) (*repo.User, error) {
 }
 
 //Delete Deletes an user
-func Delete(uid int) error {
+func Delete(user *repo.User) error {
 	tx, err := db.GetTransaction()
 	defer db.Rollback(tx)
 	if err != nil {
+		u.Logger.Error("[Delete] Error starting transaction: %s", err)
 		return err
 	}
-	err2 := repo.Delete(tx, uid)
-	if err2 != nil {
+	if err2 := user.Delete(tx); err2 != nil {
+		u.Logger.Error("[Delete] Error executing delete: %s", err)
 		return err2
 	}
 	db.Commit(tx)

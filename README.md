@@ -7,10 +7,12 @@ AS THIS IS JUST A POC, NOT EVERYTHING IS DONE EXACTLY THE WAY IT SHOULD:
 
 	1. Microservices: The system should have only one endpoint for each purpose. So, we should have an endpoint for Auth, other for users and other for insert tests. Each should run on a separate Go program and proxied by an Apache/Nginx server.
 	2. Better modules: To maximize code reusability, when creating microservices, we should have each layer on its own modules, so Auth could import user, for example.
-	3. Methods/Interfaces: Functions should be used only when there's no side effects. For calls with side effects, an interface should be created and its methods implemented.
+	3. [DONE] Methods/Interfaces: Functions should be used only when there's no side effects. For calls with side effects, an interface should be created and its methods implemented.
 	4. Tests and Documentation: Yeah... I know...
-	5. Logging: Will be done soon (probably tomorrow)
-
+	5. [DONE] Logging: Will be done soon (probably tomorrow)
+	6. [DONE] CORS
+	7. [DONE] Graceful Shutdown
+	
 Create database:
 
 	docker pull postgres

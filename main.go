@@ -14,6 +14,7 @@ import (
 	"github.com/elnerribeiro/go-ws-db-auth/utils"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -36,9 +37,17 @@ func main() {
 		w.WriteHeader(http.StatusNotFound)
 	})
 
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		Debug:            true,
+	})
+
+	handler := c.Handler(router)
+
 	srv := &http.Server{
 		Addr:    ":8000",
-		Handler: router,
+		Handler: handler,
 	}
 
 	done := make(chan os.Signal, 1)
@@ -46,14 +55,14 @@ func main() {
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			fmt.Printf("listen: %s\n", err)
+			fmt.Printf("[main] Error while executing server: %s", err)
 		}
 	}()
 
-	fmt.Println("Server started on port 8000")
+	fmt.Println("[main] Server started on port 8000")
 
 	<-done
-	fmt.Println("Server Stopped")
+	fmt.Println("[main] Server Stopped")
 	utils.FinalizeDB()
 	utils.FinalizeLog()
 
@@ -63,7 +72,7 @@ func main() {
 	}()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		fmt.Printf("Server Shutdown Failed:%+v", err)
+		fmt.Printf("[main] Server Shutdown Failed:%+v", err)
 	}
-	fmt.Println("Server Exited Properly")
+	fmt.Println("[main] Server Exited Properly")
 }
